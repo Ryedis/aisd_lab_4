@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <stack>
 
 namespace custom_set {
     class CustomSet {
@@ -167,7 +168,7 @@ namespace custom_set {
             }
         }
 
-        bool contains(int key) {
+        bool contains(const int key) const {
             Node* current = root;
 
             while (current != nullptr) {
@@ -190,6 +191,124 @@ namespace custom_set {
             return (root != nullptr); // Return true if root is not nullptr after deletion
         }
 
+        class Iterator {
+        public:
+            explicit Iterator(Node* start = nullptr) {
+                if (start) {
+                    traverseLeft(start);
+                }
+            }
+
+            int operator*() const {
+                return stack.top()->data;
+            }
+
+            Iterator& operator++() {
+                Node* current = stack.top();
+                stack.pop();
+
+                if (current->right) {
+                    traverseLeft(current->right);
+                }
+
+                return *this;
+            }
+
+            bool operator!=(const Iterator& other) const {
+                return !stack.empty() || !other.stack.empty();
+            }
+
+        private:
+            void traverseLeft(Node* node) {
+                while (node) {
+                    stack.push(node);
+                    node = node->left;
+                }
+            }
+
+            std::stack<Node*> stack;
+        };
+
+        Iterator begin() {
+            return Iterator(root);
+        }
+
+        Iterator end() {
+            return Iterator(nullptr);
+        }
+
+        // Constant Forward Iterator for CustomSet
+        class ConstIterator {
+        public:
+            explicit ConstIterator(Node* start = nullptr) {
+                if (start) {
+                    traverseLeft(start);
+                }
+            }
+
+            int operator*() const {
+                return stack.top()->data;
+            }
+
+            ConstIterator& operator++() {
+                Node* current = const_cast<Node*>(stack.top());
+                stack.pop();
+
+                if (current->right) {
+                    traverseLeft(current->right);
+                }
+
+                return *this;
+            }
+
+            bool operator!=(const ConstIterator& other) const {
+                return !stack.empty() || !other.stack.empty();
+            }
+
+        private:
+            void traverseLeft(Node* node) {
+                while (node) {
+                    stack.push(node);
+                    node = node->left;
+                }
+            }
+
+            std::stack<const Node*> stack;
+        };
+
+        ConstIterator begin() const {
+            return ConstIterator(root);
+        }
+
+        ConstIterator end() const {
+            return ConstIterator(nullptr);
+        }
     };
+
+    // set1 intersection set2
+    CustomSet findIntersection(const CustomSet& set1, const CustomSet& set2) {
+        CustomSet intersection;
+
+        for (int elem : set1) {
+            if (set2.contains(elem)) {
+                intersection.insert(elem);
+            }
+        }
+
+        return intersection;
+    }
+
+    // set1 \ set2
+    CustomSet findDifference(const CustomSet& set1, const CustomSet& set2) {
+        CustomSet difference;
+
+        for (int elem : set1) {
+            if (!set2.contains(elem)) {
+                difference.insert(elem);
+            }
+        }
+
+        return difference;
+    }
     
 }

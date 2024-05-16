@@ -6,19 +6,19 @@ namespace custom_set {
     class CustomSet {
     private:
         struct Node {
-            int data;
-            Node* left;
-            Node* right;
+            int _data;
+            Node* _left;
+            Node* _right;
 
-            Node(int val) : data(val), left(nullptr), right(nullptr) {}
+            Node(int val) : _data(val), _left(nullptr), _right(nullptr) {}
         };
 
         Node* root;
 
         void destroyTree(Node* node) {
             if (node) {
-                destroyTree(node->left);
-                destroyTree(node->right);
+                destroyTree(node->_left);
+                destroyTree(node->_right);
                 delete node;
             }
         }
@@ -28,22 +28,22 @@ namespace custom_set {
                 return nullptr;
             }
 
-            Node* newNode = new Node(node->data);
+            Node* newNode = new Node(node->_data);
             if (newNode == nullptr) {
                 throw std::bad_alloc();
             }
 
-            newNode->left = copyTree(node->left);
-            newNode->right = copyTree(node->right);
+            newNode->_left = copyTree(node->_left);
+            newNode->_right = copyTree(node->_right);
 
             return newNode;
         }
 
         void printTree(Node* node) {
             if (node) {
-                printTree(node->left);
-                std::cout << node->data << " ";
-                printTree(node->right);
+                printTree(node->_left);
+                std::cout << node->_data << " ";
+                printTree(node->_right);
             }
         }
 
@@ -52,8 +52,8 @@ namespace custom_set {
                 return nullptr;
             }
 
-            while (node->left != nullptr) {
-                node = node->left;
+            while (node->_left != nullptr) {
+                node = node->_left;
             }
 
             return node;
@@ -64,27 +64,27 @@ namespace custom_set {
                 return nullptr;
             }
 
-            if (key < node->data) {
-                node->left = eraseNode(node->left, key);
+            if (key < node->_data) {
+                node->_left = eraseNode(node->_left, key);
             }
-            else if (key > node->data) {
-                node->right = eraseNode(node->right, key);
+            else if (key > node->_data) {
+                node->_right = eraseNode(node->_right, key);
             }
             else {
-                if (node->left == nullptr) {
-                    Node* rightChild = node->right;
+                if (node->_left == nullptr) {
+                    Node* _rightChild = node->_right;
                     delete node;
-                    return rightChild;
+                    return _rightChild;
                 }
-                else if (node->right == nullptr) {
-                    Node* leftChild = node->left;
+                else if (node->_right == nullptr) {
+                    Node* _leftChild = node->_left;
                     delete node;
-                    return leftChild;
+                    return _leftChild;
                 }
                 else {
-                    Node* successor = findMin(node->right);
-                    node->data = successor->data;
-                    node->right = eraseNode(node->right, successor->data);
+                    Node* successor = findMin(node->_right);
+                    node->_data = successor->_data;
+                    node->_right = eraseNode(node->_right, successor->_data);
                 }
             }
             return node;
@@ -133,15 +133,15 @@ namespace custom_set {
                 Node* parent = nullptr;
 
                 while (current != nullptr) {
-                    if (key == current->data) {
+                    if (key == current->_data) {
                         return false; // Element already exists
                     }
                     parent = current;
-                    if (key < current->data) {
-                        current = current->left;
+                    if (key < current->_data) {
+                        current = current->_left;
                     }
                     else {
-                        current = current->right;
+                        current = current->_right;
                     }
                 }
 
@@ -153,11 +153,11 @@ namespace custom_set {
                 if (parent == nullptr) {
                     root = newNode;
                 }
-                else if (key < parent->data) {
-                    parent->left = newNode;
+                else if (key < parent->_data) {
+                    parent->_left = newNode;
                 }
                 else {
-                    parent->right = newNode;
+                    parent->_right = newNode;
                 }
 
                 return true;
@@ -172,14 +172,14 @@ namespace custom_set {
             Node* current = root;
 
             while (current != nullptr) {
-                if (key == current->data) {
+                if (key == current->_data) {
                     return true; // Element found
                 }
-                else if (key < current->data) {
-                    current = current->left;
+                else if (key < current->_data) {
+                    current = current->_left;
                 }
                 else {
-                    current = current->right;
+                    current = current->_right;
                 }
             }
 
@@ -195,20 +195,20 @@ namespace custom_set {
         public:
             explicit Iterator(Node* start = nullptr) {
                 if (start) {
-                    traverseLeft(start);
+                    traverse_left(start);
                 }
             }
 
             int operator*() const {
-                return stack.top()->data;
+                return stack.top()->_data;
             }
 
             Iterator& operator++() {
                 Node* current = stack.top();
                 stack.pop();
 
-                if (current->right) {
-                    traverseLeft(current->right);
+                if (current->_right) {
+                    traverse_left(current->_right);
                 }
 
                 return *this;
@@ -219,10 +219,10 @@ namespace custom_set {
             }
 
         private:
-            void traverseLeft(Node* node) {
+            void traverse_left(Node* node) {
                 while (node) {
                     stack.push(node);
-                    node = node->left;
+                    node = node->_left;
                 }
             }
 
@@ -242,20 +242,20 @@ namespace custom_set {
         public:
             explicit ConstIterator(Node* start = nullptr) {
                 if (start) {
-                    traverseLeft(start);
+                    traverse_left(start);
                 }
             }
 
             int operator*() const {
-                return stack.top()->data;
+                return stack.top()->_data;
             }
 
             ConstIterator& operator++() {
                 Node* current = const_cast<Node*>(stack.top());
                 stack.pop();
 
-                if (current->right) {
-                    traverseLeft(current->right);
+                if (current->_right) {
+                    traverse_left(current->_right);
                 }
 
                 return *this;
@@ -266,10 +266,10 @@ namespace custom_set {
             }
 
         private:
-            void traverseLeft(Node* node) {
+            void traverse_left(Node* node) {
                 while (node) {
                     stack.push(node);
-                    node = node->left;
+                    node = node->_left;
                 }
             }
 

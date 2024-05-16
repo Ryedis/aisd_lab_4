@@ -46,6 +46,18 @@ namespace custom_set {
             }
         }
 
+        Node* findMin(Node* node) const {
+            if (node == nullptr) {
+                return nullptr;
+            }
+
+            while (node->left != nullptr) {
+                node = node->left;
+            }
+
+            return node;
+        }
+
         Node* eraseNode(Node* node, int key) {
             if (node == nullptr) {
                 return nullptr;
@@ -178,7 +190,6 @@ namespace custom_set {
             return (root != nullptr); // Return true if root is not nullptr after deletion
         }
 
-        
-
     };
+    
 }
